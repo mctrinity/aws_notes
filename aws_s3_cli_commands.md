@@ -120,6 +120,21 @@ aws configure set output json
 ```
 _This allows you to update specific settings without running `aws configure` again._
 
+### **🔹 AWS CLI Configuration Persistence**
+- AWS CLI stores credentials and configuration in:
+  - **Credentials File:** `C:\Users\YOUR_USERNAME\.aws\credentials`
+  - **Config File:** `C:\Users\YOUR_USERNAME\.aws\config`
+- Your AWS CLI settings remain **even after closing and reopening** the CLI.
+- To verify your configuration:
+  ```sh
+  aws configure list
+  ```
+- If your settings disappear, manually check and edit the files using:
+  ```sh
+  notepad $HOME\.aws\credentials
+  notepad $HOME\.aws\config
+  ```
+
 ---
 
 ### 🚀 Happy Cloud Computing! 🎯

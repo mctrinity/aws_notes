@@ -110,6 +110,16 @@ aws configure
 ```
 _Sets up AWS CLI with your credentials, region, and output format._
 
+### **🔹 Modify AWS Configuration Settings**
+To manually update AWS CLI settings:
+```sh
+aws configure set aws_access_key_id YOUR_ACCESS_KEY
+aws configure set aws_secret_access_key YOUR_SECRET_KEY
+aws configure set region YOUR_REGION
+aws configure set output json
+```
+_This allows you to update specific settings without running `aws configure` again._
+
 ---
 
 ### 🚀 Happy Cloud Computing! 🎯

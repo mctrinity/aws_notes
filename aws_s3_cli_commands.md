@@ -8,6 +8,19 @@ _Lists all S3 buckets in your AWS account._
 
 ---
 
+## 🛠️ Create a New S3 Bucket
+```sh
+aws s3api create-bucket --bucket your-bucket-name --region your-region --create-bucket-configuration LocationConstraint=your-region
+```
+_Creates a new S3 bucket in the specified region._
+
+Example:
+```sh
+aws s3api create-bucket --bucket my-new-bucket --region us-east-1 --create-bucket-configuration LocationConstraint=us-east-1
+```
+
+---
+
 ## 📂 List Objects in a Bucket
 ```sh
 aws s3 ls s3://your-bucket-name --recursive
@@ -160,6 +173,25 @@ _This applies the previously defined policy to the bucket._
 aws s3api get-bucket-policy --bucket your-bucket-name
 ```
 _This confirms that the policy was applied successfully._
+
+---
+
+## 🔹 Generate a Policy Using AWS Policy Generator
+You can use AWS’s **Policy Generator** to create custom policies:
+
+🔗 **AWS Policy Generator:** [https://awspolicygen.s3.amazonaws.com/policygen.html](https://awspolicygen.s3.amazonaws.com/policygen.html)
+
+To generate a policy:
+1. Select **Policy Type** (S3 Bucket Policy).
+2. Choose **Effect** (Allow or Deny).
+3. Specify the **Principal** (who gets access).
+4. Choose **Actions** (e.g., `s3:GetObject`, `s3:PutObject`).
+5. Enter the **Resource ARN** (`arn:aws:s3:::your-bucket-name/*`).
+6. Click **Generate Policy** and copy the JSON output.
+7. Apply it to your bucket using:
+   ```sh
+   aws s3api put-bucket-policy --bucket your-bucket-name --policy file://generated-policy.json
+   ```
 
 ---
 

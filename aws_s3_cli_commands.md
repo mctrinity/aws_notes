@@ -101,6 +101,24 @@ _Deletes a bucket and all its contents._
 
 ---
 
+## 🔄 Restoring Deleted Objects Using Delete Markers
+
+### **1️⃣ List Delete Markers in a Versioned Bucket**
+```sh
+aws s3api list-object-versions --bucket your-bucket-name --prefix your-object-key
+```
+_Lists all versions and delete markers for an object._
+
+---
+
+### **2️⃣ Remove the Delete Marker to Restore an Object**
+```sh
+aws s3api delete-object --bucket your-bucket-name --key your-object-key --version-id YOUR_DELETE_MARKER_VERSION_ID
+```
+_Deletes the delete marker, effectively restoring the object._
+
+---
+
 ## 🔍 Check S3 Bucket Permissions (ACL)
 ```sh
 aws s3api get-bucket-acl --bucket your-bucket-name
@@ -114,102 +132,6 @@ _Shows who has access to your S3 bucket._
 aws s3api get-bucket-location --bucket your-bucket-name
 ```
 _Displays the AWS region of a specific S3 bucket._
-
----
-
-## 🔄 Managing S3 Versioning and Permissions
-
-### **1️⃣ Understanding S3 Versioning Behavior**
-- **Latest version inherits permissions by default**, while **older versions retain their original permissions**.
-- When a **new version** of an object is uploaded, **previous versions do not automatically update their permissions**.
-- If permissions are changed at the bucket level, they **do not retroactively apply** to older versions of an object.
-
----
-
-### **2️⃣ List All Versions of an Object**
-```sh
-aws s3api list-object-versions --bucket your-bucket-name --prefix your-object-key
-```
-_Lists all versions of a specific object._
-
----
-
-### **3️⃣ Download a Specific Version**
-```sh
-aws s3api get-object --bucket your-bucket-name --key your-object-key --version-id YOUR_VERSION_ID your-local-file
-```
-_Downloads an older version of an object._
-
----
-
-### **4️⃣ Restore an Older Version as the Latest**
-```sh
-aws s3 cp s3://your-bucket-name/your-object-key s3://your-bucket-name/your-object-key --version-id YOUR_VERSION_ID
-```
-_Makes an older version the latest by copying it back._
-
----
-
-### **5️⃣ Apply Public Read to an Older Version**
-```sh
-aws s3api put-object-acl --bucket your-bucket-name --key your-object-key --version-id YOUR_VERSION_ID --acl public-read
-```
-_Grants public read access to a specific older version._
-
----
-
-### **6️⃣ Apply Public Read to All Versions (Loop)**
-```sh
-for version in $(aws s3api list-object-versions --bucket your-bucket-name --prefix your-object-key --query "Versions[].VersionId" --output text); do
-    aws s3api put-object-acl --bucket your-bucket-name --key your-object-key --version-id $version --acl public-read;
-done
-```
-_Grants public read access to all versions of an object._
-
----
-
-## 🚨 Fix Access Denied When Applying a Bucket Policy
-
-### **1️⃣ Allow Public Policies by Disabling Block Public Access**
-```sh
-aws s3api put-public-access-block --bucket your-bucket-name --public-access-block-configuration "BlockPublicAcls=false,IgnorePublicAcls=false,BlockPublicPolicy=false,RestrictPublicBuckets=false"
-```
-_This allows public bucket policies to be applied._
-
----
-
-### **2️⃣ Apply the Bucket Policy Again**
-```sh
-aws s3api put-bucket-policy --bucket your-bucket-name --policy "file://C:\Users\YOUR_USERNAME\Desktop\AWS_Stuff\bucket-policy.json"
-```
-_This applies the previously defined policy to the bucket._
-
----
-
-### **3️⃣ Verify the Bucket Policy**
-```sh
-aws s3api get-bucket-policy --bucket your-bucket-name
-```
-_This confirms that the policy was applied successfully._
-
----
-
-## 🔹 Generate a Policy Using AWS Policy Generator
-You can use AWS’s **Policy Generator** to create custom policies:
-
-🔗 **AWS Policy Generator:** [https://awspolicygen.s3.amazonaws.com/policygen.html](https://awspolicygen.s3.amazonaws.com/policygen.html)
-
-To generate a policy:
-1. Select **Policy Type** (S3 Bucket Policy).
-2. Choose **Effect** (Allow or Deny).
-3. Specify the **Principal** (who gets access).
-4. Choose **Actions** (e.g., `s3:GetObject`, `s3:PutObject`).
-5. Enter the **Resource ARN** (`arn:aws:s3:::your-bucket-name/*`).
-6. Click **Generate Policy** and copy the JSON output.
-7. Apply it to your bucket using:
-   ```sh
-   aws s3api put-bucket-policy --bucket your-bucket-name --policy file://generated-policy.json
-   ```
 
 ---
 

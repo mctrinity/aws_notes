@@ -117,36 +117,54 @@ _Displays the AWS region of a specific S3 bucket._
 
 ---
 
-## 🛠️ Configure AWS CLI
-```sh
-aws configure
-```
-_Sets up AWS CLI with your credentials, region, and output format._
+## 🔄 Managing S3 Versioning and Permissions
 
-### **🔹 Modify AWS Configuration Settings**
-To manually update AWS CLI settings:
-```sh
-aws configure set aws_access_key_id YOUR_ACCESS_KEY
-aws configure set aws_secret_access_key YOUR_SECRET_KEY
-aws configure set region YOUR_REGION
-aws configure set output json
-```
-_This allows you to update specific settings without running `aws configure` again._
+### **1️⃣ Understanding S3 Versioning Behavior**
+- **Latest version inherits permissions by default**, while **older versions retain their original permissions**.
+- When a **new version** of an object is uploaded, **previous versions do not automatically update their permissions**.
+- If permissions are changed at the bucket level, they **do not retroactively apply** to older versions of an object.
 
-### **🔹 AWS CLI Configuration Persistence**
-- AWS CLI stores credentials and configuration in:
-  - **Credentials File:** `C:\Users\YOUR_USERNAME\.aws\credentials`
-  - **Config File:** `C:\Users\YOUR_USERNAME\.aws\config`
-- Your AWS CLI settings remain **even after closing and reopening** the CLI.
-- To verify your configuration:
-  ```sh
-  aws configure list
-  ```
-- If your settings disappear, manually check and edit the files using:
-  ```sh
-  notepad $HOME\.aws\credentials
-  notepad $HOME\.aws\config
-  ```
+---
+
+### **2️⃣ List All Versions of an Object**
+```sh
+aws s3api list-object-versions --bucket your-bucket-name --prefix your-object-key
+```
+_Lists all versions of a specific object._
+
+---
+
+### **3️⃣ Download a Specific Version**
+```sh
+aws s3api get-object --bucket your-bucket-name --key your-object-key --version-id YOUR_VERSION_ID your-local-file
+```
+_Downloads an older version of an object._
+
+---
+
+### **4️⃣ Restore an Older Version as the Latest**
+```sh
+aws s3 cp s3://your-bucket-name/your-object-key s3://your-bucket-name/your-object-key --version-id YOUR_VERSION_ID
+```
+_Makes an older version the latest by copying it back._
+
+---
+
+### **5️⃣ Apply Public Read to an Older Version**
+```sh
+aws s3api put-object-acl --bucket your-bucket-name --key your-object-key --version-id YOUR_VERSION_ID --acl public-read
+```
+_Grants public read access to a specific older version._
+
+---
+
+### **6️⃣ Apply Public Read to All Versions (Loop)**
+```sh
+for version in $(aws s3api list-object-versions --bucket your-bucket-name --prefix your-object-key --query "Versions[].VersionId" --output text); do
+    aws s3api put-object-acl --bucket your-bucket-name --key your-object-key --version-id $version --acl public-read;
+done
+```
+_Grants public read access to all versions of an object._
 
 ---
 

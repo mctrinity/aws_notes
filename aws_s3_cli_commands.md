@@ -137,4 +137,30 @@ _This allows you to update specific settings without running `aws configure` aga
 
 ---
 
+## 🚨 Fix Access Denied When Applying a Bucket Policy
+
+### **1️⃣ Allow Public Policies by Disabling Block Public Access**
+```sh
+aws s3api put-public-access-block --bucket your-bucket-name --public-access-block-configuration "BlockPublicAcls=false,IgnorePublicAcls=false,BlockPublicPolicy=false,RestrictPublicBuckets=false"
+```
+_This allows public bucket policies to be applied._
+
+---
+
+### **2️⃣ Apply the Bucket Policy Again**
+```sh
+aws s3api put-bucket-policy --bucket your-bucket-name --policy "file://C:\Users\YOUR_USERNAME\Desktop\AWS_Stuff\bucket-policy.json"
+```
+_This applies the previously defined policy to the bucket._
+
+---
+
+### **3️⃣ Verify the Bucket Policy**
+```sh
+aws s3api get-bucket-policy --bucket your-bucket-name
+```
+_This confirms that the policy was applied successfully._
+
+---
+
 ### 🚀 Happy Cloud Computing! 🎯
